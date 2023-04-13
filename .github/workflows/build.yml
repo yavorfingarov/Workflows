@@ -4,7 +4,7 @@ on:
       dotnet-version:
         required: true
         type: string
-      unit-tests-csproj-path:
+      unit-tests-path:
         required: true
         type: string
       status-gist-id:
@@ -73,17 +73,17 @@ jobs:
       - name: Generate test coverage report
         uses: danielpalme/ReportGenerator-GitHub-Action@5.1.19
         with:
-          reports: './TestResults/**/coverage.cobertura.xml'
-          targetdir: './TestCoverageReport'
-          reporttypes: 'Html;CsvSummary'
+          reports: ./TestResults/**/coverage.cobertura.xml
+          targetdir: ./TestCoverageReport
+          reporttypes: Html;CsvSummary
 
       - name: Set up Stryker
         run: dotnet tool install dotnet-stryker --tool-path ./tools
-        working-directory: ${{ inputs.unit-tests-csproj-path }}
+        working-directory: ${{ inputs.unit-tests-path }}
 
       - name: Run mutation tests
         run: ./tools/dotnet-stryker --config-file stryker-config.yaml --output ${{ github.workspace }}/StrykerOutput
-        working-directory: ${{ inputs.unit-tests-csproj-path }}
+        working-directory: ${{ inputs.unit-tests-path }}
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v3
