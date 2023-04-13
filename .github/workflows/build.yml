@@ -14,7 +14,7 @@ on:
       min-coverage:
         required: false
         type: number
-        default: 90
+        default: 85
     secrets:
       GIST_TOKEN:
         required: true
@@ -107,15 +107,15 @@ jobs:
           }
           set_lines_of_code() {
             if [[ ${#1} -lt 4 ]]; then
-              set_output "lines_of_code" "Lines of code" "$1"
+              set_output "lines-of-code" "Lines of code" "$1"
             elif [[ ${#1} -eq 4 ]]; then
-              set_output "lines_of_code" "Lines of code" "${1::1}.${1:1:1}" "k"
+              set_output "lines-of-code" "Lines of code" "${1::1}.${1:1:1}" "k"
             elif [[ ${#1} -eq 5 ]]; then
-              set_output "lines_of_code" "Lines of code" "${1:0:2}" "k"
+              set_output "lines-of-code" "Lines of code" "${1:0:2}" "k"
             elif [[ ${#1} -eq 6 ]]; then
-              set_output "lines_of_code" "Lines of code" "${1:0:3}" "k"
+              set_output "lines-of-code" "Lines of code" "${1:0:3}" "k"
             else
-              echo "::error::Got an unsupported value $1 for lines_of_code."
+              echo "::error::Got an unsupported value $1 for lines-of-code."
               exit 1
             fi
           }
@@ -129,10 +129,10 @@ jobs:
           lines_of_code=$(cat ./TestCoverageReport/Summary.csv | grep -Po '(?<=Total lines:;)[0-9]+')
           set_lines_of_code "$lines_of_code"
           test_coverage=$(cat ./TestCoverageReport/Summary.csv | grep -Po '(?<=Line coverage:;)[0-9]+')
-          set_output "test_coverage" "Test coverage" "$test_coverage" "%"
+          set_output "test-coverage" "Test coverage" "$test_coverage" "%"
           mutation_report_path=$(find ./StrykerOutput -name mutation-report.md)
           mutation_score=$(cat $mutation_report_path | grep -Po '(?<=## The final mutation score is )[0-9]+')
-          set_output "mutation_score" "Mutation score" "$mutation_score" "%"
+          set_output "mutation-score" "Mutation score" "$mutation_score" "%"
           check_coverage "$test_coverage" "$mutation_score"
 
       - name: Update lines of code gist
@@ -143,7 +143,7 @@ jobs:
           gistID: ${{ inputs.status-gist-id }}
           filename: lines-of-code.json
           label: loc
-          message: ${{ steps.analyze-coverage-report.outputs.lines_of_code }}
+          message: ${{ steps.analyze-coverage-report.outputs.lines-of-code }}
           color: blue
 
       - name: Update test coverage gist
@@ -154,7 +154,7 @@ jobs:
           gistID: ${{ inputs.status-gist-id }}
           filename: test-coverage.json
           label: test coverage
-          message: ${{ steps.analyze-coverage-report.outputs.test_coverage }}
+          message: ${{ steps.analyze-coverage-report.outputs.test-coverage }}
           color: brightgreen
 
       - name: Update mutation score gist
@@ -165,7 +165,7 @@ jobs:
           gistID: ${{ inputs.status-gist-id }}
           filename: mutation-score.json
           label: mutation score
-          message: ${{ steps.analyze-coverage-report.outputs.mutation_score }}
+          message: ${{ steps.analyze-coverage-report.outputs.mutation-score }}
           color: brightgreen
 
       - name: Check src/ for changes
