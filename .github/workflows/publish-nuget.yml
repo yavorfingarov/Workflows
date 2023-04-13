@@ -1,0 +1,40 @@
+on:
+  workflow_call:
+    inputs:
+      dotnet-version:
+        required: true
+        type: string
+      csproj-path:
+        required: true
+        type: string
+    secrets:
+      NUGET_API_KEY:
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ inputs.csproj-path }}
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release ${{ inputs.csproj-path }}
+
+      - name: Create package
+        if: ${{ github.ref_name == 'master' && steps.changed-src.outputs.changed == 'true' }}
+        run: dotnet pack --no-build --configuration Release --output ./packages ${{ inputs.csproj-path }}
+
+      - name: Publish to NuGet gallery
+        run: >
+          dotnet nuget push ./packages/*.nupkg
+          --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }}
