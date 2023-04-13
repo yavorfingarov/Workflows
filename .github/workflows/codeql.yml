@@ -4,6 +4,10 @@ on:
       dotnet-version:
         type: string
         required: true
+      languages:
+        required: false
+        default: csharp
+        type: string
 
 jobs:
   analyze:
@@ -16,7 +20,7 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
-          languages: csharp
+          languages: ${{ inputs.languages }}
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v3
