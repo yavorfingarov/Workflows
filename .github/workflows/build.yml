@@ -1,19 +1,20 @@
 on:
   workflow_call:
     inputs:
-      dotnet-version:
-        required: true
-        type: string
       unit-tests-path:
         required: true
         type: string
       status-gist-id:
         required: true
         type: string
+      dotnet-version:
+        required: false
+        type: string
+        default: 7.0.x
       min-coverage:
         required: false
-        default: 90
         type: number
+        default: 90
     secrets:
       GIST_TOKEN:
         required: true
