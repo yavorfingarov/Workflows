@@ -32,7 +32,6 @@ jobs:
         run: dotnet build --no-restore --configuration Release ${{ inputs.csproj-path }}
 
       - name: Create package
-        if: ${{ github.ref_name == 'master' && steps.changed-src.outputs.changed == 'true' }}
         run: dotnet pack --no-build --configuration Release --output ./packages ${{ inputs.csproj-path }}
 
       - name: Publish to NuGet gallery
